@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css?family=Contrail+One');
+
+body{
+  background:#942f5e;
+}
+#main-wrapper{
+  position:relative;
+  margin: 0 auto;
+  width:100%;
+  height:100%;
+  -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+#canvas{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#a7802c;
+  overflow:hidden;
+}
+#score-label{
+  position:absolute;
+  top:10px;
+  left:10px;
+  font-family: 'Contrail One', cursive;
+  font-size:30px;
+  color:#fff;
+  text-shadow:1px 1px 0 #000;
+}
+#start-btn{
+  position:absolute;
+  background:#D5A21A;
+  color:#fff;
+  font-family: 'Contrail One', cursive;
+  font-size:30px;
+  padding:3px 10px;
+  border-radius:10px;
+  text-shadow:1px 1px 0 #A35906;
+  border:4px solid #fff;
+  cursor:pointer;
+  top:200px;
+  left:50%;
+  margin-left:-40px;
+  display:nonea;
+  box-shadow:0 0 20px rgba(0, 0, 0, 0.5);
+}
+#pause-btn{
+  
+}
+.balloon.green{
+  position:absolute;
+  width:100px;
+  height:100px;
+  shape-outside: circle();
+  clip-path: circle();
+  background: rgb(23, 126, 62);
+}

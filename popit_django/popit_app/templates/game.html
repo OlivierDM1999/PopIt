@@ -1,0 +1,28 @@
+<html>
+    {% load static %}
+    <!-- Header -->
+    <head>
+        <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+    </head>
+    <body>
+      <div id="main-wrapper">
+        <div id="canvas">
+        </div>
+        <div id="score-label">
+          Score: <span id="score-count">0</span>
+        </div>
+        <div id="start-btn">
+          <span>Play</span>
+        </div>
+        <div id="pause-btn">
+        </div>
+      </div>
+    </body>
+    
+    <script>
+      document.getElementById("canvas").style.backgroundImage="url('{% url 'video_stream' %}')";
+    </script>
+    
+    <script src="{% static 'js/game_code.js' %}"></script>
+    <!-- Footer -->
+</html>
