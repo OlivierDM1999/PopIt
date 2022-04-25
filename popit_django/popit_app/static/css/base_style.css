@@ -1,0 +1,88 @@
+h1,h2,h3,h4,h5,h6 
+{
+    font-family: 'Poppins';
+}
+
+h5{
+    margin-top: 2%;
+}
+
+
+p
+{
+    font-family: 'Poppins';
+}
+body{
+    background-color:rgba(188, 90, 69, 0.75);
+}
+
+label{
+    font-family: 'Poppins';
+}
+
+
+/**
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+
+}
+
+
+
+
+
+
+body{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color:rgba(188, 90, 69, 0.75);
+}
+
+
+
+.connexion-button {
+    text-align: center;
+    color: #fff;
+    background-color:  rgba(80, 57, 76, 0.52);
+    border-radius: 20px;
+    margin-left:3%;
+    
+    
+    
+    
+}
+
+
+
+
+.navbar-brand{
+    color:black;
+    margin-right: 7%;
+    margin-left:1%
+}
+.nav-link{
+    color:black;
+}
+
+.nav-item {
+    padding-right: 20%;
+    
+}
+**/
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 
 
+# FONCTIONS POUR LE JEU 
 
 class VideoCamera(object):
     def __init__(self):
@@ -30,13 +31,39 @@ def video_stream(request):
                     content_type='multipart/x-mixed-replace; boundary=frame')
 
 
-
-def index(request):
-    return render(request,"hello.html")
-
-
 def game(request):
     return render(request,"game.html")
+
+
+
+
+# ARCHITECTURE APPLICATION    
+
+def accueil(request):
+    return render(request,"accueil.html")
+
+def inscription(request):
+    return render(request,"inscription.html")
+
+def connexion(request):
+    return render(request,"connexion.html")
+
+def jouer(request):
+    return render(request,"jouer.html")
+
+def classement(request):
+    return render(request,"classement.html")
+
+def contact(request):
+    return render(request,"contact.html")
+
+def game2(request):
+    return render(request,"game2.html")
+
+
+
+
+
 
 
 
