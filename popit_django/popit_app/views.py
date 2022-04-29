@@ -46,7 +46,7 @@ def checkSession(request):
         nom = request.session['nom']
     except:
         nom = ""
-        
+
     return nom
 
 
@@ -68,10 +68,10 @@ def inscription(request):
                 Request_BDD.inscription(infos['email'], infos['nom'], infos['prenom'], infos['password'], infos['pays'])
                 return redirect(connexion)
             else :
-                return render(request, "inscription.html", {'form' : form})
+                return render(request, "inscription.html", {'form' : form, 'nom':nom})
 
     form = forms.inscription_form()
-    return render(request, "inscription.html", {'form' : form})
+    return render(request, "inscription.html", {'form' : form, 'nom':nom})
 
 def connexion(request):
     nom = checkSession(request)
