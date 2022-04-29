@@ -2,7 +2,7 @@ from django.forms import modelformset_factory
 from ..models import *
 
 from datetime import datetime, date, timedelta
-from django.db.models import Sum, Average
+from django.db.models import Sum
 from django.contrib.auth.hashers import make_password, check_password
 
 
@@ -145,10 +145,17 @@ class Request_BDD():
     # Pas de modification de mode possible -> obligation de suppresion et puis création
 
     ############### OBTENTION D'INFORMATIONS ###############
+    def getNomJoueur(email):
+        joueur = Joueur.objects.filter(email__exact = email).values_list('nom')
+        joueur = list(*list(joueur))
+
+        return joueur[0]
+
+    # Modifier la récupération du joueur concerné idJoueur -> email ?
     def getHistoriquePerso(joueur):
         # joueur = idJoueur
         infosParties = []
-        infos = Partie.objects.filter(idJoueur__exact = joueur).values_list('idPartie','score','date','duree', 'idMode')
+        infos = Partie.objects.filter(email__exact = joueur).values_list('idPartie','score','date','duree', 'idMode')
         infos=list(*list(infos))
         
         infosMode = Mode.objects.filter(idMode__exact = infos[4]).values_list('nom','difficulte')

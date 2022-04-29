@@ -73,8 +73,20 @@
                     <a class="nav-link" href="{% url 'contact' %}"><h4>Contact</h4></a>
                   </li>
               </ul>
-              <form class="form-inline my-2 my-lg-0" action="{% url 'connexion' %}" method='GET'>
-                <button class="btn btn-dark my-2 my-sm-0" type="submit" style="border-radius: 20px; background-color:rgba(80, 57, 76, 0.52);"><h5>Connexion</h5></button>
+
+                {% if nom == ""%}
+                    <form class="form-inline my-2 my-lg-0" action="{% url 'connexion' %}" method='POST'>
+                {% else %}
+                    <form class="form-inline my-2 my-lg-0" action="{% url 'deconnexion' %}" method='POST'>
+                {% endif %}
+                {% csrf_token %}
+                <button class="btn btn-dark my-2 my-sm-0" type="submit" style="border-radius: 20px; background-color:rgba(80, 57, 76, 0.52);"><h5>
+                    {% if nom == ""%}
+                        Connexion
+                    {% else %}
+                        Deconnexion
+                    {% endif %}
+                </h5></button>
               </form>
             </div>
           </nav>
