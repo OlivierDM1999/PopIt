@@ -31,7 +31,7 @@ def video_stream(request):
 
 
 
-def index(request):
+def index(request): 
     return render(request,"hello.html")
 
 
