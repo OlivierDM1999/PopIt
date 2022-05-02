@@ -13,10 +13,11 @@ class VideoCamera(object):
     def __del__(self):
         self.cap.release()
     def get_frame(self):
+        local = caches['default']
+        local.set('key', 123+np.random.randint(100))
         ret, frame = self.cap.read()
         frame_flip = cv2.flip(frame, 1)
         ret, frame = cv2.imencode('.jpg', frame_flip)
-
         return frame.tobytes()
 
 
@@ -60,6 +61,8 @@ def contact(request):
 def game2(request):
     return render(request,"game2.html")
 
+def game1(request):
+    return render(request,"game.html")
 
 
 
