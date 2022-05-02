@@ -6,7 +6,7 @@ import numpy as np
 
 from . import forms
 from django.contrib.auth import login
-from .request.Request_BDD import *
+from .request.Request_BDD import Request_BDD
 
 
 # FONCTIONS POUR LE JEU 
@@ -109,11 +109,18 @@ def deconnexion(request):
 
 def jouer(request):
     nom = checkSession(request)
+    #Request_BDD.addPartie(1, 1, request.session['mail'])
+    #Request_BDD.modificationPartie(1, 50, 180)
     return render(request,"jouer.html",{'nom':nom})
 
 def classement(request):
     nom = checkSession(request)
-    return render(request,"classement.html",{'nom':nom})
+    try:
+        lastGame = Request_BDD.getLastGame(request.session['mail'])
+    
+        return render(request,"classement.html",{'nom':nom, 'score': lastGame.score, 'mode': lastGame.idMode.nom, 'difficulte': lastGame.idMode.difficulte})
+    except:
+        return render(request,"classement.html",{'nom':nom, 'score': '/', 'mode': '/', 'difficulte': '/'})
 
 def contact(request):
     nom = checkSession(request)

@@ -1,6 +1,7 @@
 from django.forms import modelformset_factory
 from ..models import *
 
+import datetime as dt
 from datetime import datetime, date, timedelta
 from django.db.models import Sum
 from django.contrib.auth.hashers import make_password, check_password
@@ -53,7 +54,7 @@ class Request_BDD():
                     nom = nom_mode,
                     difficulte = difficulte_mode,
                     tempsImparti = tempsImparti_mode,
-                    PointsNegatifsOn = pointsNegatifsOn_mode
+                    pointsNegatifsOn = pointsNegatifsOn_mode
                 )
             return 'OK'
         else:
@@ -62,7 +63,7 @@ class Request_BDD():
                     nom = nom_mode,
                     difficulte = difficulte_mode,
                     tempsImparti = tempsImparti_mode,
-                    PointsNegatifsOn = pointsNegatifsOn_mode
+                    pointsNegatifsOn = pointsNegatifsOn_mode
                 )
                 return 'OK'
             else:
@@ -71,7 +72,7 @@ class Request_BDD():
 
     # Ajout Modele
     def addModele(lien_modele):
-        if (Mode.objects.filter(lien__exact=lien_modele).count()==0):
+        if (Modele.objects.filter(lien__exact=lien_modele).count()==0):
             ajoutModele = Modele.objects.create(
                 lien = lien_modele
             )
@@ -83,9 +84,9 @@ class Request_BDD():
     # Ajout Partie
     def addPartie(modele_partie, mode_partie, joueur):
         # A compléter pour récupérer les informations correspondantes !!!!!!!!
-        modele = "" # A récupérer de l'organisation du joueur
-        mode = "" # A récupérer de la saisie de l'utilisateur
-        joueur = "" # A récupérer du profil de l'utilisateur
+        modele = Modele.objects.get(pk= modele_partie) # A récupérer de l'organisation du joueur
+        mode = Mode.objects.get(pk= mode_partie) # A récupérer de la saisie de l'utilisateur
+        joueur = Joueur.objects.get(pk = joueur)
 
         # AJOUTER verifification identité avec faceNet ...
         # Scripts python: appel faceNet en fonction du lien du modele
@@ -93,7 +94,7 @@ class Request_BDD():
         ajoutPartie = Partie.objects.create(
             score= 0,
             date = datetime.today().strftime('%Y-%m-%d'),
-            duree = 0,
+            duree =  dt.timedelta(days=0, hours=0, minutes=3, seconds =0),
             idModele = modele,
             idMode = mode,
             idJoueur = joueur
@@ -139,17 +140,22 @@ class Request_BDD():
 
         modifPartie = Partie.objects.get(idPartie__exact = idPartie)
         modifPartie.score = score
-        modifPartie.duree = duree 
+        modifPartie.duree = dt.timedelta(days=0, hours=0, minutes=0, seconds =duree)
         modifPartie.save()
 
     # Pas de modification de mode possible -> obligation de suppresion et puis création
 
     ############### OBTENTION D'INFORMATIONS ###############
     def getNomJoueur(email):
-        joueur = Joueur.objects.filter(email__exact = email).values_list('nom')
-        joueur = list(*list(joueur))
+        joueur = Joueur.objects.get(email__exact = email)
 
-        return joueur[0]
+        return joueur.prenom
+
+    # récupérer les infos de la denière partie du joueur connecté
+    def getLastGame(email):
+        PartiesSorted = Partie.objects.filter(idJoueur__exact = email).order_by("date")
+
+        return PartiesSorted[0]
 
     # Modifier la récupération du joueur concerné idJoueur -> email ?
     def getHistoriquePerso(joueur):
