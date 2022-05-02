@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-fluid vh-100">
+    <div class="row justify-content-center m-5 p-5" style="height: 100%;">
+        <div class="col col-lg-3 col-md-3">
+        </div>
+        <div class="col col-lg-6 col-md-6 p-5 " style="width:100%; background-color: #50394C; border-radius: 20px;">
+            <div class="text-center">
+                <h2 style="width:100%; font-weight: bold; color:#FFEF96"> Configuration de la partie </h2>
+            </div>
+            
+            <form action="{% url 'game2' %}" method='GET'> 
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1" style="color:#FFEF96">Mode de jeu</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                      <option>Classique</option>
+                      <option>Fun</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleFormControlSelect2" style="color:#FFEF96">Difficulté</label>
+                    <select class="form-control" id="exampleFormControlSelect2">
+                      <option>Facile</option>
+                      <option>Normal</option>
+                      <option>Difficile</option>
+                    </select>
+                  </div>
+
+                <div class="text-center mt-5">
+                    <button class="btn btn-dark my-2 my-sm-0" type="submit" style="border-radius: 20px; background-color:#FFEF96;"><h5 style="color:#50394C">Lancement</h5></button>
+                </div>
+            </form>
+        </div>
+        <div class="col col-lg-3 col-md-3">
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

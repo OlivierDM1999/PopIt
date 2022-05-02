@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-fluid vh-100">
+    <div class="row justify-content-center m-5 p-5" style="height: 100%; background-color: white; border-radius: 20px;">
+        <div class="col">
+            <h2 class="text-center" style="font-weight: bold;"> Connexion </h2>
+            <form method='POST'>
+                {{ form.as_p }}
+                {% csrf_token %}
+
+                <!--
+                <div class="form-group">
+                    <label for="InputEmail">Adresse mail</label>
+                    <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Entrez votre adresse mail">
+                  
+                </div>
+
+                <div class="form-group">
+                    <label for="InputPassword">Mot de passe</label>
+                    <input type="password" class="form-control" id="InputPassword" placeholder="Entrez votre mot de passe">
+                </div>-->
+                <div class="text-center mt-5">
+                    <button class="btn btn-dark my-2 my-sm-0" type="submit" style="border-radius: 20px; background-color:#FFEF96;"><h5 style="color:#50394C">Se connecter</h5></button>
+                </div>
+
+            </form>
+            <div class="text-center mt-5">
+                <h5>Pas encore de compte ?</h5>
+                <a href="{% url 'inscription' %}"><h5 style="font-weight: bold; color:black">S'inscrire</h5></a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

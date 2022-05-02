@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid vh-100">
+    {% if nom != ""%}
+        <div class="row m-5 p-5" style="height: 100%; background-color: #50394C; border-radius: 20px; color:#FFEF96">
+            <div class="text-left" style="width:100%;">
+                <h4 style="font-weight:bold;">Votre dernière partie</h4>
+                <h5>Mode : {{mode}}</h5>
+                <h5>Difficulté : {{difficulte}} </h5>
+                <h5>Score : {{score}}</h5>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row m-5 p-5" style="height: 100%; background-color: #50394C; border-radius: 20px;">
+        <div class="text-left" style="width:100%;">
+            <ul class="nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="#" style="color:#FFEF96"><h3>Classement</h3></a>
+                </li>
+                {% if nom != ""%}
+                <li class="nav-item">
+                  <a class="nav-link" href="#" style="color:#FFEF96"><h3>Historique</h3></a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center m-5 p-5" style="height: 100%; background-color: #50394C; border-radius: 20px;">
+        <table class="table">
+            <thead>
+                <tr style="color:#FFEF96;">
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="color:#FFEF96;">
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                </tr>
+                <tr style="color:#FFEF96;">
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+                </tr>
+                <tr style="color:#FFEF96;">
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+                </tr>
+                <tr style="color:#FFEF96;">
+                <th scope="row">4</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+                </tr>
+                <tr style="color:#FFEF96;">
+                <th scope="row">5</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
