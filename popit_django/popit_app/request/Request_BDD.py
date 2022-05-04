@@ -140,7 +140,7 @@ class Request_BDD():
 
         modifPartie = Partie.objects.get(idPartie__exact = idPartie)
         modifPartie.score = score
-        modifPartie.duree = dt.timedelta(days=0, hours=0, minutes=0, seconds =duree)
+        modifPartie.duree = dt.timedelta(days=0, hours=0, minutes=0, seconds=duree)
         modifPartie.save()
 
     # Pas de modification de mode possible -> obligation de suppresion et puis création
@@ -159,20 +159,33 @@ class Request_BDD():
 
     # Modifier la récupération du joueur concerné idJoueur -> email ?
     def getHistoriquePerso(joueur):
-        # joueur = idJoueur
-        infosParties = []
-        infos = Partie.objects.filter(email__exact = joueur).values_list('idPartie','score','date','duree', 'idMode')
-        infos=list(*list(infos))
+        infosParties= []
+        try:
+            infos = list(Partie.objects.filter(idJoueur__exact = joueur).values_list('date','duree','score','idMode'))
+            for elem in infos:
+                infosMode = Mode.objects.get(idMode__exact = elem[3])
+                infosPartie = list(elem)[:-2] + [infosMode.nom, infosMode.difficulte, list(elem)[2]]
+                infosParties.append(infosPartie)
+            return infosParties
+
+        except:
+            return infosParties
         
-        infosMode = Mode.objects.filter(idMode__exact = infos[4]).values_list('nom','difficulte')
-        infosMode=list(*list(infosMode))
+    def getClassement():
+        infosParties = []
 
-        infosGlobales = infos.append(*list(infosMode))
+        try:
+            infos = list(Partie.objects.all().values_list('idJoueur','date','duree','score','idMode'))
+            for elem in infos:
+                infosMode = Mode.objects.get(idMode__exact = elem[4])
+                nomJoueur = Joueur.objects.get(email__exact = list(elem)[0]).nom
+                infosPartie = [nomJoueur,list(elem)[1],list(elem)[2]] + [infosMode.nom, infosMode.difficulte, list(elem)[3]]
+                infosParties.append(infosPartie)
+            return infosParties
 
-        return infosGlobales
-        # Sorties à tester !!
+        except:
+            return infosParties
 
-        return infosParties
 
     def getClassementOneFilter(filter):
         # TO DO

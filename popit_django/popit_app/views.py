@@ -110,17 +110,44 @@ def deconnexion(request):
 def jouer(request):
     nom = checkSession(request)
     #Request_BDD.addPartie(1, 1, request.session['mail'])
-    #Request_BDD.modificationPartie(1, 50, 180)
+    #Request_BDD.modificationPartie(1, 120, 180)
     return render(request,"jouer.html",{'nom':nom})
 
 def classement(request):
     nom = checkSession(request)
+    # AJOUTER L'AFFICHAGE EN FONCTION DE LA SOUS-SECTION VOULUE
     try:
         lastGame = Request_BDD.getLastGame(request.session['mail'])
-    
-        return render(request,"classement.html",{'nom':nom, 'score': lastGame.score, 'mode': lastGame.idMode.nom, 'difficulte': lastGame.idMode.difficulte})
+
+        # section historique
+        columnNamesHisto = ['Date', 'Durée', 'Nom du mode', 'Difficulte du mode', 'Score']
+        historiqueParties = Request_BDD.getHistoriquePerso(request.session['mail'])
+
+        # section classement
+        columnNamesClass = ['Joueur','Date', 'Durée', 'Nom du mode', 'Difficulte du mode','Score']
+        classementParties = Request_BDD.getClassement()
+
+        return render(request,"classement.html",{'nom':nom,
+                                                'score': lastGame.score,
+                                                'mode': lastGame.idMode.nom,
+                                                'difficulte': lastGame.idMode.difficulte,
+                                                'columnNamesHisto': columnNamesHisto,
+                                                'partiesHisto': historiqueParties,
+                                                'columnNamesClass': columnNamesClass,
+                                                'partiesClass': classementParties})
     except:
-        return render(request,"classement.html",{'nom':nom, 'score': '/', 'mode': '/', 'difficulte': '/'})
+        # section classement
+        columnNamesClass = ['Joueur','Date', 'Durée', 'Nom du mode', 'Difficulte du mode','Score']
+        classementParties = Request_BDD.getClassement()
+        
+        return render(request,"classement.html",{'nom':nom,
+                                                'score': '/',
+                                                'mode': '/',
+                                                'difficulte': '/',
+                                                'columnNamesHisto': [],
+                                                'partiesHisto': [],
+                                                'columnNamesClass': columnNamesClass,
+                                                'partiesClass': classementParties})
 
 def contact(request):
     nom = checkSession(request)
