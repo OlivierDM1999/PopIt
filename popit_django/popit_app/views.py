@@ -107,7 +107,7 @@ def deconnexion(request):
             pass
         
     nom = checkSession(request)
-    return render(request,"accueil.html",{'nom':nom})
+    return redirect('accueil')
 
 def getDifficultes(request):
     if request.method == "POST":
@@ -122,8 +122,6 @@ def getDifficultes(request):
 def jouer(request):
     nom = checkSession(request)
     modes = Request_BDD.getMode()
-    #idPartie = Request_BDD.addPartie(1, 'fun', 'difficile', request.session['mail'])
-    #Request_BDD.modificationPartie(idPartie, 92, 300)
     return render(request,"jouer.html",{'nom':nom, 'modes': modes})
 
 def classement(request):
@@ -167,7 +165,26 @@ def contact(request):
 
 def game2(request):
     nom = checkSession(request)
-    return render(request,"game2.html",{'nom':nom})
+    if nom != "":
+        if request.method == "GET":
+            
+            modeSelected = request.GET.get('mode')
+            difficulteSelected = request.GET.get('difficulte')
+
+            print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
+
+            # AJOUTER verifification identité avec faceNet ...
+            # Scripts python: appel faceNet en fonction du lien du modele
+            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
+            
+            idPartie, temps = Request_BDD.addPartie(1, modeSelected, difficulteSelected, request.session['mail'])
+            Request_BDD.modificationPartie(idPartie, 92, 300)
+
+            print("Temps", temps)
+            return render(request,"game2.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps})
+
+    else : 
+        return redirect('jouer')
 
 def game1(request):
     return render(request,"game.html")

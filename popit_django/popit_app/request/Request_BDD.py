@@ -85,22 +85,18 @@ class Request_BDD():
     def addPartie(modele_partie, nom_mode, difficulte_mode, joueur):
         # A compléter pour récupérer les informations correspondantes !!!!!!!!
         modele = Modele.objects.get(pk= modele_partie) # A récupérer de l'organisation du joueur
-        mode = list(Mode.objects.filter(nom__exact=nom_mode, difficulte__exact = difficulte_mode)) # A Tester
+        mode = Mode.objects.get(nom__exact=nom_mode, difficulte__exact = difficulte_mode) # A Tester
         joueur = Joueur.objects.get(pk = joueur)
-
-        # AJOUTER verifification identité avec faceNet ...
-        # Scripts python: appel faceNet en fonction du lien du modele
-        # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
 
         newPartie = Partie.objects.create(
             score= 0,
             date = datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
-            duree =  dt.timedelta(days=0, hours=0, minutes=3, seconds =0), # A initialiser à 0
+            duree =  dt.timedelta(days=0, hours=0, minutes=0, seconds =0), # A initialiser à 0
             idModele = modele,
-            idMode = mode[0],
+            idMode = mode,
             idJoueur = joueur
         )
-        return newPartie.pk
+        return newPartie.pk, mode.tempsImparti
 
 
     ############### SUPPRESSION D'ELEMENTS ###############
