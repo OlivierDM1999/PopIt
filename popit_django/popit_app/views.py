@@ -1,5 +1,6 @@
+from urllib import response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.http.response import StreamingHttpResponse
 import cv2
 import numpy as np
@@ -108,15 +109,25 @@ def deconnexion(request):
     nom = checkSession(request)
     return render(request,"accueil.html",{'nom':nom})
 
+def getDifficultes(request):
+    if request.method == "POST":
+        mode = request.POST.get('mode')
+        difficultes = Request_BDD.getDifficultes(mode)
+        response_data = {
+            "difficultes": difficultes
+        }
+        return JsonResponse(response_data)
+
+
 def jouer(request):
     nom = checkSession(request)
-    #Request_BDD.addPartie(1, 1, request.session['mail'])
-    #Request_BDD.modificationPartie(1, 120, 180)
-    return render(request,"jouer.html",{'nom':nom})
+    modes = Request_BDD.getMode()
+    #idPartie = Request_BDD.addPartie(1, 'classique', 'facile', request.session['mail'])
+    #Request_BDD.modificationPartie(idPartie, 53, 180)
+    return render(request,"jouer.html",{'nom':nom, 'modes': modes})
 
 def classement(request):
     nom = checkSession(request)
-    # AJOUTER L'AFFICHAGE EN FONCTION DE LA SOUS-SECTION VOULUE
     try:
         lastGame = Request_BDD.getLastGame(request.session['mail'])
 

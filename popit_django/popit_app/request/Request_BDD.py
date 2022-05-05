@@ -58,7 +58,7 @@ class Request_BDD():
                 )
             return 'OK'
         else:
-            if Mode.objects.filter(difficulte__exact=difficulte_mode).count()==0:
+            if Mode.objects.filter(nom__exact=nom_mode, difficulte__exact=difficulte_mode).count()==0:
                 ajoutMode = Mode.objects.create(
                     nom = nom_mode,
                     difficulte = difficulte_mode,
@@ -82,23 +82,25 @@ class Request_BDD():
 
 
     # Ajout Partie
-    def addPartie(modele_partie, mode_partie, joueur):
+    def addPartie(modele_partie, nom_mode, difficulte_mode, joueur):
         # A compléter pour récupérer les informations correspondantes !!!!!!!!
         modele = Modele.objects.get(pk= modele_partie) # A récupérer de l'organisation du joueur
-        mode = Mode.objects.get(pk= mode_partie) # A récupérer de la saisie de l'utilisateur
+        mode = list(Mode.objects.filter(nom__exact=nom_mode, difficulte__exact = difficulte_mode)) # A Tester
         joueur = Joueur.objects.get(pk = joueur)
 
         # AJOUTER verifification identité avec faceNet ...
         # Scripts python: appel faceNet en fonction du lien du modele
+        # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
 
-        ajoutPartie = Partie.objects.create(
+        newPartie = Partie.objects.create(
             score= 0,
-            date = datetime.today().strftime('%Y-%m-%d'),
-            duree =  dt.timedelta(days=0, hours=0, minutes=3, seconds =0),
+            date = datetime.today().strftime('%Y-%m-%d'), #Si changement de type datetimeField -> ajouter %H:%M:%S'
+            duree =  dt.timedelta(days=0, hours=0, minutes=3, seconds =0), # A initialiser à 0
             idModele = modele,
-            idMode = mode,
+            idMode = mode[0],
             idJoueur = joueur
         )
+        return newPartie.pk
 
 
     ############### SUPPRESSION D'ELEMENTS ###############
@@ -151,11 +153,13 @@ class Request_BDD():
 
         return joueur.prenom
 
+
     # récupérer les infos de la denière partie du joueur connecté
     def getLastGame(email):
         PartiesSorted = Partie.objects.filter(idJoueur__exact = email).order_by("date")
 
         return PartiesSorted[0]
+
 
     # Modifier la récupération du joueur concerné idJoueur -> email ?
     def getHistoriquePerso(joueur):
@@ -171,6 +175,7 @@ class Request_BDD():
         except:
             return infosParties
         
+
     def getClassement():
         infosParties = []
 
@@ -187,7 +192,19 @@ class Request_BDD():
             return infosParties
 
 
-    def getClassementOneFilter(filter):
-        # TO DO
-        return "None"
+    def getMode():
+        modesDisponibles = []
+        modes =  Mode.objects.values('nom').distinct()
+        for mode in modes:
+            modesDisponibles.append(mode['nom'])
+
+        return modesDisponibles
+
+
+    def getDifficultes(modeNom):
+        difficulte = list(Mode.objects.filter(nom__exact = modeNom).values('difficulte'))
+
+        return difficulte
+
+
 
