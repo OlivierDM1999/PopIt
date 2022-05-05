@@ -35,8 +35,8 @@ class Joueur(models.Model):
 class Partie(models.Model):
     idPartie = models.AutoField(primary_key=True)
     score = models.IntegerField(default=0)
-    date = models.DateField(default=date.today)
-    duree = models.DurationField(default="00:00:00")
+    date = models.DateTimeField(auto_now_add=True)
+    duree = models.DurationField(default="00:00:00") 
     idModele = models.ForeignKey(Modele, on_delete=models.CASCADE)
     idMode = models.ForeignKey(Mode, on_delete=models.CASCADE)
     idJoueur = models.ForeignKey(Joueur, on_delete=models.CASCADE)

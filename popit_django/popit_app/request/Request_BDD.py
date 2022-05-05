@@ -94,7 +94,7 @@ class Request_BDD():
 
         newPartie = Partie.objects.create(
             score= 0,
-            date = datetime.today().strftime('%Y-%m-%d'), #Si changement de type datetimeField -> ajouter %H:%M:%S'
+            date = datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
             duree =  dt.timedelta(days=0, hours=0, minutes=3, seconds =0), # A initialiser à 0
             idModele = modele,
             idMode = mode[0],
@@ -156,7 +156,7 @@ class Request_BDD():
 
     # récupérer les infos de la denière partie du joueur connecté
     def getLastGame(email):
-        PartiesSorted = Partie.objects.filter(idJoueur__exact = email).order_by("date")
+        PartiesSorted = Partie.objects.filter(idJoueur__exact = email).order_by("-date")
 
         return PartiesSorted[0]
 
@@ -183,7 +183,7 @@ class Request_BDD():
             infos = list(Partie.objects.all().values_list('idJoueur','date','duree','score','idMode'))
             for elem in infos:
                 infosMode = Mode.objects.get(idMode__exact = elem[4])
-                nomJoueur = Joueur.objects.get(email__exact = list(elem)[0]).nom
+                nomJoueur = Joueur.objects.get(email__exact = list(elem)[0]).prenom
                 infosPartie = [nomJoueur,list(elem)[1],list(elem)[2]] + [infosMode.nom, infosMode.difficulte, list(elem)[3]]
                 infosParties.append(infosPartie)
             return infosParties

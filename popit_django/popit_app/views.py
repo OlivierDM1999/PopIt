@@ -122,8 +122,8 @@ def getDifficultes(request):
 def jouer(request):
     nom = checkSession(request)
     modes = Request_BDD.getMode()
-    #idPartie = Request_BDD.addPartie(1, 'classique', 'facile', request.session['mail'])
-    #Request_BDD.modificationPartie(idPartie, 53, 180)
+    #idPartie = Request_BDD.addPartie(1, 'fun', 'difficile', request.session['mail'])
+    #Request_BDD.modificationPartie(idPartie, 92, 300)
     return render(request,"jouer.html",{'nom':nom, 'modes': modes})
 
 def classement(request):
