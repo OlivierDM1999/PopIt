@@ -1,4 +1,3 @@
-from django.forms import modelformset_factory
 from ..models import *
 
 import datetime as dt
@@ -32,12 +31,13 @@ class Request_BDD():
     ############### AJOUT D'ELEMENTS ###############
 
     # Inscription (ajout d'un nouveau joueur)
-    def inscription(mail_user, nom_user, prenom_user, password_user, pays_user):
+    def inscription(mail_user, nom_user, prenom_user, password_user, pays_user, pseudo_user):
         if Joueur.objects.filter(email__exact = mail_user).count() == 0: #Vérification que l'adresse mail ne soit pas déjà utilisée
             ajoutJoueur = Joueur.objects.create(
                 email = mail_user,
                 password = make_password(password=password_user),
                 prenom = prenom_user,
+                pseudo = pseudo_user,
                 nom = nom_user,
                 pays = pays_user
             )
@@ -100,6 +100,13 @@ class Request_BDD():
 
 
     ############### SUPPRESSION D'ELEMENTS ###############
+    def viderTable():
+        Partie.objects.all().delete()
+        Joueur.objects.all().delete()
+        Mode.objects.all().delete()
+        Modele.objects.all().delete()
+
+
     def suppressionJoueur(email):
         supp = Joueur.objects.get(email__exact = email)
         supp.delete()
@@ -113,16 +120,17 @@ class Request_BDD():
         supp.delete()
 
     def suppressionpartie(idPartie):
-        supp = Partie.objects.filter(idPartie__exact = idPartie)
+        supp = Partie.objects.get(pk = idPartie)
         supp.delete()
 
 
     ############### MODIFICATION D'ELEMENTS ###############
-    def modificationJoueur(email, nom, prenom, password, pays):
+    def modificationJoueur(email, nom, prenom, password, pays, pseudo):
         # Impossible de modifier l'email (pour l'instant)
         modifJoueur = Joueur.objects.get(email__exact = email)
         modifJoueur.nom = nom
         modifJoueur.prenom = prenom
+        modifJoueur.pseudo = pseudo
         modifJoueur.password = password
         modifJoueur.pays = pays
         modifJoueur.save()
@@ -136,7 +144,7 @@ class Request_BDD():
         # Score à récupérer de l'interface
         # Durée, à récupérer également de l'interface
 
-        modifPartie = Partie.objects.get(idPartie__exact = idPartie)
+        modifPartie = Partie.objects.get(pk = idPartie)
         modifPartie.score = score
         modifPartie.duree = dt.timedelta(days=0, hours=0, minutes=0, seconds=duree)
         modifPartie.save()
@@ -148,6 +156,9 @@ class Request_BDD():
         joueur = Joueur.objects.get(email__exact = email)
 
         return joueur.prenom
+
+    def verifyDisponiblePseudo(pseudo_user):
+        return Joueur.objects.filter(pseudo__exact = pseudo_user).count()
 
 
     # récupérer les infos de la denière partie du joueur connecté
@@ -163,7 +174,7 @@ class Request_BDD():
         try:
             infos = list(Partie.objects.filter(idJoueur__exact = joueur).values_list('date','duree','score','idMode'))
             for elem in infos:
-                infosMode = Mode.objects.get(idMode__exact = elem[3])
+                infosMode = Mode.objects.get(pk = elem[3])
                 infosPartie = list(elem)[:-2] + [infosMode.nom, infosMode.difficulte, list(elem)[2]]
                 infosParties.append(infosPartie)
             return infosParties
@@ -178,9 +189,9 @@ class Request_BDD():
         try:
             infos = list(Partie.objects.all().values_list('idJoueur','date','duree','score','idMode'))
             for elem in infos:
-                infosMode = Mode.objects.get(idMode__exact = elem[4])
-                nomJoueur = Joueur.objects.get(email__exact = list(elem)[0]).prenom
-                infosPartie = [nomJoueur,list(elem)[1],list(elem)[2]] + [infosMode.nom, infosMode.difficulte, list(elem)[3]]
+                infosMode = Mode.objects.get(pk = elem[4])
+                pseudoJoueur = Joueur.objects.get(email__exact = list(elem)[0]).pseudo
+                infosPartie = [pseudoJoueur,list(elem)[1],list(elem)[2]] + [infosMode.nom, infosMode.difficulte, list(elem)[3]]
                 infosParties.append(infosPartie)
             return infosParties
 

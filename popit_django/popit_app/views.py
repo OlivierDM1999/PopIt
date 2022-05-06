@@ -55,6 +55,12 @@ def checkSession(request):
 # ARCHITECTURE APPLICATION    
 
 def accueil(request):
+    #Request_BDD.addModele('PopIt/popit_django/popit_app/faceNet_models/testModels.h5')
+    #Request_BDD.addMode('classique', 'facile', 180, False)
+    #Request_BDD.addMode('classique', 'moyen', 240, False)
+    #Request_BDD.addMode('classique', 'difficile', 300, False)
+    #Request_BDD.addMode('explosif', 'facile', 180, True)
+    #Request_BDD.addMode('explosif', 'difficile', 300, True)
     nom = checkSession(request)
     return render(request,"accueil.html",{'nom':nom})
 
@@ -66,8 +72,8 @@ def inscription(request):
         
         if form.is_valid():
             infos = request.POST
-            if infos['password'] == infos['password2']:
-                Request_BDD.inscription(infos['email'], infos['nom'], infos['prenom'], infos['password'], infos['pays'])
+            if ((infos['password'] == infos['password2']) and (Request_BDD.verifyDisponiblePseudo(infos['pseudo']) == 0)):
+                Request_BDD.inscription(infos['email'], infos['nom'], infos['prenom'], infos['password'], infos['pays'], infos['pseudo'])
                 return redirect(connexion)
             else :
                 return render(request, "inscription.html", {'form' : form, 'nom':nom})
@@ -177,7 +183,7 @@ def game2(request):
             # Scripts python: appel faceNet en fonction du lien du modele
             # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
             
-            idPartie, temps = Request_BDD.addPartie(1, modeSelected, difficulteSelected, request.session['mail'])
+            idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
             Request_BDD.modificationPartie(idPartie, 92, 300)
 
             print("Temps", temps)
