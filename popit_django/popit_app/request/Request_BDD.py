@@ -1,4 +1,3 @@
-from django.forms import modelformset_factory
 from ..models import *
 
 import datetime as dt
@@ -32,12 +31,13 @@ class Request_BDD():
     ############### AJOUT D'ELEMENTS ###############
 
     # Inscription (ajout d'un nouveau joueur)
-    def inscription(mail_user, nom_user, prenom_user, password_user, pays_user):
+    def inscription(mail_user, nom_user, prenom_user, password_user, pays_user, pseudo_user):
         if Joueur.objects.filter(email__exact = mail_user).count() == 0: #Vérification que l'adresse mail ne soit pas déjà utilisée
             ajoutJoueur = Joueur.objects.create(
                 email = mail_user,
                 password = make_password(password=password_user),
                 prenom = prenom_user,
+                pseudo = pseudo_user,
                 nom = nom_user,
                 pays = pays_user
             )
@@ -58,7 +58,7 @@ class Request_BDD():
                 )
             return 'OK'
         else:
-            if Mode.objects.filter(difficulte__exact=difficulte_mode).count()==0:
+            if Mode.objects.filter(nom__exact=nom_mode, difficulte__exact=difficulte_mode).count()==0:
                 ajoutMode = Mode.objects.create(
                     nom = nom_mode,
                     difficulte = difficulte_mode,
@@ -82,26 +82,31 @@ class Request_BDD():
 
 
     # Ajout Partie
-    def addPartie(modele_partie, mode_partie, joueur):
+    def addPartie(modele_partie, nom_mode, difficulte_mode, joueur):
         # A compléter pour récupérer les informations correspondantes !!!!!!!!
         modele = Modele.objects.get(pk= modele_partie) # A récupérer de l'organisation du joueur
-        mode = Mode.objects.get(pk= mode_partie) # A récupérer de la saisie de l'utilisateur
+        mode = Mode.objects.get(nom__exact=nom_mode, difficulte__exact = difficulte_mode) # A Tester
         joueur = Joueur.objects.get(pk = joueur)
 
-        # AJOUTER verifification identité avec faceNet ...
-        # Scripts python: appel faceNet en fonction du lien du modele
-
-        ajoutPartie = Partie.objects.create(
+        newPartie = Partie.objects.create(
             score= 0,
-            date = datetime.today().strftime('%Y-%m-%d'),
-            duree =  dt.timedelta(days=0, hours=0, minutes=3, seconds =0),
+            date = datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+            duree =  dt.timedelta(days=0, hours=0, minutes=0, seconds =0), # A initialiser à 0
             idModele = modele,
             idMode = mode,
             idJoueur = joueur
         )
+        return newPartie.pk, mode.tempsImparti
 
 
     ############### SUPPRESSION D'ELEMENTS ###############
+    def viderTable():
+        Partie.objects.all().delete()
+        Joueur.objects.all().delete()
+        Mode.objects.all().delete()
+        Modele.objects.all().delete()
+
+
     def suppressionJoueur(email):
         supp = Joueur.objects.get(email__exact = email)
         supp.delete()
@@ -115,16 +120,17 @@ class Request_BDD():
         supp.delete()
 
     def suppressionpartie(idPartie):
-        supp = Partie.objects.filter(idPartie__exact = idPartie)
+        supp = Partie.objects.get(pk = idPartie)
         supp.delete()
 
 
     ############### MODIFICATION D'ELEMENTS ###############
-    def modificationJoueur(email, nom, prenom, password, pays):
+    def modificationJoueur(email, nom, prenom, password, pays, pseudo):
         # Impossible de modifier l'email (pour l'instant)
         modifJoueur = Joueur.objects.get(email__exact = email)
         modifJoueur.nom = nom
         modifJoueur.prenom = prenom
+        modifJoueur.pseudo = pseudo
         modifJoueur.password = password
         modifJoueur.pays = pays
         modifJoueur.save()
@@ -138,9 +144,9 @@ class Request_BDD():
         # Score à récupérer de l'interface
         # Durée, à récupérer également de l'interface
 
-        modifPartie = Partie.objects.get(idPartie__exact = idPartie)
+        modifPartie = Partie.objects.get(pk = idPartie)
         modifPartie.score = score
-        modifPartie.duree = dt.timedelta(days=0, hours=0, minutes=0, seconds =duree)
+        modifPartie.duree = dt.timedelta(days=0, hours=0, minutes=0, seconds=duree)
         modifPartie.save()
 
     # Pas de modification de mode possible -> obligation de suppresion et puis création
@@ -151,30 +157,61 @@ class Request_BDD():
 
         return joueur.prenom
 
+    def verifyDisponiblePseudo(pseudo_user):
+        return Joueur.objects.filter(pseudo__exact = pseudo_user).count()
+
+
     # récupérer les infos de la denière partie du joueur connecté
     def getLastGame(email):
-        PartiesSorted = Partie.objects.filter(idJoueur__exact = email).order_by("date")
+        PartiesSorted = Partie.objects.filter(idJoueur__exact = email).order_by("-date")
 
         return PartiesSorted[0]
 
+
     # Modifier la récupération du joueur concerné idJoueur -> email ?
     def getHistoriquePerso(joueur):
-        # joueur = idJoueur
-        infosParties = []
-        infos = Partie.objects.filter(email__exact = joueur).values_list('idPartie','score','date','duree', 'idMode')
-        infos=list(*list(infos))
+        infosParties= []
+        try:
+            infos = list(Partie.objects.filter(idJoueur__exact = joueur).values_list('date','duree','score','idMode'))
+            for elem in infos:
+                infosMode = Mode.objects.get(pk = elem[3])
+                infosPartie = list(elem)[:-2] + [infosMode.nom, infosMode.difficulte, list(elem)[2]]
+                infosParties.append(infosPartie)
+            return infosParties
+
+        except:
+            return infosParties
         
-        infosMode = Mode.objects.filter(idMode__exact = infos[4]).values_list('nom','difficulte')
-        infosMode=list(*list(infosMode))
 
-        infosGlobales = infos.append(*list(infosMode))
+    def getClassement():
+        infosParties = []
 
-        return infosGlobales
-        # Sorties à tester !!
+        try:
+            infos = list(Partie.objects.all().values_list('idJoueur','date','duree','score','idMode'))
+            for elem in infos:
+                infosMode = Mode.objects.get(pk = elem[4])
+                pseudoJoueur = Joueur.objects.get(email__exact = list(elem)[0]).pseudo
+                infosPartie = [pseudoJoueur,list(elem)[1],list(elem)[2]] + [infosMode.nom, infosMode.difficulte, list(elem)[3]]
+                infosParties.append(infosPartie)
+            return infosParties
 
-        return infosParties
+        except:
+            return infosParties
 
-    def getClassementOneFilter(filter):
-        # TO DO
-        return "None"
+
+    def getMode():
+        modesDisponibles = []
+        modes =  Mode.objects.values('nom').distinct()
+        for mode in modes:
+            modesDisponibles.append(mode['nom'])
+
+        return modesDisponibles
+
+
+    def getDifficultes(modeNom):
+        difficulte = list(Mode.objects.filter(nom__exact = modeNom).values('difficulte'))
+
+        return difficulte
+
+
 

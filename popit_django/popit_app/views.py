@@ -1,5 +1,6 @@
+from urllib import response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.http.response import StreamingHttpResponse
 import cv2
 import numpy as np
@@ -49,6 +50,12 @@ def checkSession(request):
 # ARCHITECTURE APPLICATION    
 
 def accueil(request):
+    #Request_BDD.addModele('PopIt/popit_django/popit_app/faceNet_models/testModels.h5')
+    #Request_BDD.addMode('classique', 'facile', 180, False)
+    #Request_BDD.addMode('classique', 'moyen', 240, False)
+    #Request_BDD.addMode('classique', 'difficile', 300, False)
+    #Request_BDD.addMode('explosif', 'facile', 180, True)
+    #Request_BDD.addMode('explosif', 'difficile', 300, True)
     nom = checkSession(request)
     return render(request,"accueil.html",{'nom':nom})
 
@@ -60,8 +67,8 @@ def inscription(request):
         
         if form.is_valid():
             infos = request.POST
-            if infos['password'] == infos['password2']:
-                Request_BDD.inscription(infos['email'], infos['nom'], infos['prenom'], infos['password'], infos['pays'])
+            if ((infos['password'] == infos['password2']) and (Request_BDD.verifyDisponiblePseudo(infos['pseudo']) == 0)):
+                Request_BDD.inscription(infos['email'], infos['nom'], infos['prenom'], infos['password'], infos['pays'], infos['pseudo'])
                 return redirect(connexion)
             else :
                 return render(request, "inscription.html", {'form' : form, 'nom':nom})
@@ -101,22 +108,57 @@ def deconnexion(request):
             pass
         
     nom = checkSession(request)
-    return render(request,"accueil.html",{'nom':nom})
+    return redirect('accueil')
+
+def getDifficultes(request):
+    if request.method == "POST":
+        mode = request.POST.get('mode')
+        difficultes = Request_BDD.getDifficultes(mode)
+        response_data = {
+            "difficultes": difficultes
+        }
+        return JsonResponse(response_data)
+
 
 def jouer(request):
     nom = checkSession(request)
-    #Request_BDD.addPartie(1, 1, request.session['mail'])
-    #Request_BDD.modificationPartie(1, 50, 180)
-    return render(request,"jouer.html",{'nom':nom})
+    modes = Request_BDD.getMode()
+    return render(request,"jouer.html",{'nom':nom, 'modes': modes})
 
 def classement(request):
     nom = checkSession(request)
     try:
         lastGame = Request_BDD.getLastGame(request.session['mail'])
-    
-        return render(request,"classement.html",{'nom':nom, 'score': lastGame.score, 'mode': lastGame.idMode.nom, 'difficulte': lastGame.idMode.difficulte})
+
+        # section historique
+        columnNamesHisto = ['Date', 'Durée', 'Nom du mode', 'Difficulte du mode', 'Score']
+        historiqueParties = Request_BDD.getHistoriquePerso(request.session['mail'])
+
+        # section classement
+        columnNamesClass = ['Joueur','Date', 'Durée', 'Nom du mode', 'Difficulte du mode','Score']
+        classementParties = Request_BDD.getClassement()
+
+        return render(request,"classement.html",{'nom':nom,
+                                                'score': lastGame.score,
+                                                'mode': lastGame.idMode.nom,
+                                                'difficulte': lastGame.idMode.difficulte,
+                                                'columnNamesHisto': columnNamesHisto,
+                                                'partiesHisto': historiqueParties,
+                                                'columnNamesClass': columnNamesClass,
+                                                'partiesClass': classementParties})
     except:
-        return render(request,"classement.html",{'nom':nom, 'score': '/', 'mode': '/', 'difficulte': '/'})
+        # section classement
+        columnNamesClass = ['Joueur','Date', 'Durée', 'Nom du mode', 'Difficulte du mode','Score']
+        classementParties = Request_BDD.getClassement()
+        
+        return render(request,"classement.html",{'nom':nom,
+                                                'score': '/',
+                                                'mode': '/',
+                                                'difficulte': '/',
+                                                'columnNamesHisto': [],
+                                                'partiesHisto': [],
+                                                'columnNamesClass': columnNamesClass,
+                                                'partiesClass': classementParties})
 
 def contact(request):
     nom = checkSession(request)
@@ -124,7 +166,26 @@ def contact(request):
 
 def game2(request):
     nom = checkSession(request)
-    return render(request,"game2.html",{'nom':nom})
+    if nom != "":
+        if request.method == "GET":
+            
+            modeSelected = request.GET.get('mode')
+            difficulteSelected = request.GET.get('difficulte')
+
+            print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
+
+            # AJOUTER verifification identité avec faceNet ...
+            # Scripts python: appel faceNet en fonction du lien du modele
+            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
+            
+            idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
+            Request_BDD.modificationPartie(idPartie, 92, 300)
+
+            print("Temps", temps)
+            return render(request,"game2.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps})
+
+    else : 
+        return redirect('jouer')
 
 def game1(request):
     return render(request,"game.html")

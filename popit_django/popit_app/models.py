@@ -28,6 +28,7 @@ class Joueur(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     email = models.EmailField(max_length=255,primary_key=True)
+    pseudo = models.CharField(max_length=100, default="")
     password = models.CharField(max_length=255)
     pays = models.CharField(max_length=255)
     #idJeu = models.ForeignKey(Jeu, on_delete=models.CASCADE)
@@ -35,8 +36,8 @@ class Joueur(models.Model):
 class Partie(models.Model):
     idPartie = models.AutoField(primary_key=True)
     score = models.IntegerField(default=0)
-    date = models.DateField(default=date.today)
-    duree = models.DurationField(default="00:00:00")
+    date = models.DateTimeField(auto_now_add=True)
+    duree = models.DurationField(default="00:00:00") 
     idModele = models.ForeignKey(Modele, on_delete=models.CASCADE)
     idMode = models.ForeignKey(Mode, on_delete=models.CASCADE)
     idJoueur = models.ForeignKey(Joueur, on_delete=models.CASCADE)

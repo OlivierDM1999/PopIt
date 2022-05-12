@@ -10,20 +10,19 @@
                 <h2 style="width:100%; font-weight: bold; color:#FFEF96"> Configuration de la partie </h2>
             </div>
             
-            <form action="{% url 'game2' %}" method='GET'> 
+            <form action="{% url 'game2' %}" name="configGame" id="id_configGame" method='GET'> 
                 <div class="form-group">
                     <label for="exampleFormControlSelect1" style="color:#FFEF96">Mode de jeu</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
-                      <option>Classique</option>
-                      <option>Fun</option>
+                    <select class="form-control" name="mode" id="id_mode" form="id_configGame">
+                      {% for mode in modes%}
+                        <option value="{{mode}}">{{mode}}</option>
+                      {% endfor %}
                     </select>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" >
                     <label for="exampleFormControlSelect2" style="color:#FFEF96">Difficulté</label>
-                    <select class="form-control" id="exampleFormControlSelect2">
-                      <option>Facile</option>
-                      <option>Normal</option>
-                      <option>Difficile</option>
+                    <select class="form-control" name="difficulte" id="id_difficulte" form="id_configGame">
+
                     </select>
                   </div>
 
@@ -37,8 +36,38 @@
     </div>
 </div>
 
+<script>
+  function loadMode()
+  {
+    document.getElementById("id_difficulte").innerHTML = "";
+    $.ajax({
+      type: 'POST',
+      url: "getDifficultes",
+      data:{
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        mode: $("#id_mode").val(),
+      },
+      dataType: 'json',
+      success: function(response){
+        let select = document.getElementById("id_difficulte");
+        for (var i=0; i< response.difficultes.length; i++)
+        {
+          var option = document.createElement("option");
+          option.value = response.difficultes[i]['difficulte'];
+          option.innerHTML = response.difficultes[i]['difficulte'];
+          select.appendChild(option);
+        }
+      },
+    });
+  };
 
+  $(document).ready( function(){
+    loadMode();
+    });
 
-
+  document.getElementById("id_mode").addEventListener('change', function(){
+    loadMode();
+  });
+</script>
 
 {% endblock %}
