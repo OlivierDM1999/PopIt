@@ -4,7 +4,6 @@ from django.http import HttpResponse, JsonResponse
 from django.http.response import StreamingHttpResponse
 import cv2
 import numpy as np
-
 from . import forms
 from django.contrib.auth import login
 from .request.Request_BDD import Request_BDD
@@ -56,6 +55,7 @@ def accueil(request):
     #Request_BDD.addMode('classique', 'difficile', 300, False)
     #Request_BDD.addMode('explosif', 'facile', 180, True)
     #Request_BDD.addMode('explosif', 'difficile', 300, True)
+
     nom = checkSession(request)
     return render(request,"accueil.html",{'nom':nom})
 
@@ -193,6 +193,24 @@ def game1(request):
 
 
 
-
+def mode_perso(request):
+    print("ok")
+    nom = checkSession(request)
+    form = forms.mode_perso_form()
+    print("51515")
+    if request.method == "POST":
+        print("1818")
+        form = forms.mode_perso_form(request.POST)
+        if form.is_valid():
+            infos = request.POST
+            print(infos)
+            Request_BDD.addMode(infos["nom"], infos['difficulte'], infos['tempsImparti_mode'], infos['pointsNegatifsOn_mode'])
+            return redirect('jouer')
+        else:
+            return render(request,"mode_perso.html", {'form' : form, 'nom':nom})
+        
+    else:
+        print("fefe")
+        return render(request,"mode_perso.html", {'form' : form, 'nom':nom})
 
 

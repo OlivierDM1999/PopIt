@@ -8,10 +8,17 @@
         <div class="col col-lg-6 col-md-6 p-5 " style="width:100%; background-color: #50394C; border-radius: 20px;">
             <div class="text-center">
                 <h2 style="width:100%; font-weight: bold; color:#FFEF96"> Configuration de la partie </h2>
+                <!--
+                <form class="form-group" action="{% url 'mode_perso' %}" method='POST'>
+                  {% csrf_token %}
+                  <button class="btn btn-dark" type="submit" style="background-color: #50394C; color:#FFEF96; border:#FFEF96"><i class="fa fa-gear"></i></button>
+                </form>
+                -->
+                
             </div>
             
             <form action="{% url 'game2' %}" name="configGame" id="id_configGame" method='GET'> 
-                <div class="form-group">
+                <div class="form-group mt-4">
                     <label for="exampleFormControlSelect1" style="color:#FFEF96">Mode de jeu</label>
                     <select class="form-control" name="mode" id="id_mode" form="id_configGame">
                       {% for mode in modes%}
@@ -26,7 +33,9 @@
                     </select>
                   </div>
 
-                <div class="text-center mt-5">
+                <div class="text-center mt-2">
+                    <a href="{% url 'mode_perso' %}" class="btn btn-dark " style="background-color: #50394C; color:#FFEF96; border:#FFEF96"><i class="fa fa-gear"></i></a>
+                    <br>
                     <button class="btn btn-dark my-2 my-sm-0" type="submit" style="border-radius: 20px; background-color:#FFEF96;"><h5 style="color:#50394C">Lancement</h5></button>
                 </div>
             </form>
