@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+  <div id="updatenote" class="updatenote mt10">Index fingertip</div>
+  <div id="main-wrapper" style="text-align: center;">
+    
+    <div class="container">
+      <video class="input_video" style="display:none;"></video>
+      <canvas class="canvas" width="598px" height="336px" style="transform: scaleX(-1);"></canvas>
+    </div>
+    <div id="score-label">
+      Score: <span id="score-count">0</span>
+    </div>
+    <div id="start-btn">
+      <span>Play</span>
+    </div>
+  </div>
+
+  
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+<script type="module">
+
+// ================================================================== BEGIN OF FINGERTIP part
+
+  let updateNote = document.getElementById("updatenote");
+  const videoElement = document.getElementsByClassName('input_video')[0];
+  var canvasElement = document.getElementsByClassName('canvas')[0];
+  var canvasCtx = canvasElement.getContext('2d');
+
+  var posTip = [0, 0];
+  var score = 0;
+  var nbrBallons = 3;
+  
+
+  function Balloon(){
+  this.targetX = getRandomXpos();
+  this.targetY = -15;
+  this.speed = getRandomSpeed();
+  this.touche = false;
+  this.y = canvasElement.height;
+  this.velY = 0;
+}
+
+
+  var arrayBalloons = [];
+  for(var j=0 ; j<nbrBallons; j++){
+    arrayBalloons[j] = new Balloon();
+  }
+
+
+
+
+  function onResults(results) {
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+    //console.log(arrayBalloons);
+    for(var i=0 ; i<arrayBalloons.length; i++){
+      arrayBalloons[i].update();
+    }
+    
+    if (results.multiHandLandmarks) {
+      for (const landmarks of results.multiHandLandmarks) {
+        drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: 5});
+        drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+        posTip[0] = Math.round(landmarks[8].x*canvasElement.width);
+        posTip[1] = Math.round(landmarks[8].y*canvasElement.height);
+        //updateNote.innerText = 'Index fingertip = ['+posTip[0]+' ; '+posTip[1]+']';
+      }
+    }
+    
+    canvasCtx.restore();
+  }
+  
+  const hands = new Hands({locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+  }});
+  hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+  });
+  hands.onResults(onResults);
+  
+  const camera = new Camera(videoElement, {
+    onFrame: async () => {
+      await hands.send({image: videoElement});
+    },
+    width: canvasElement.width,
+    height: canvasElement.height
+  });
+
+// ================================================================== END OF FINGERTIP part
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+// ================================================================== BEGIN OF BALLOON part
+
+let startBtn = document.getElementById('start-btn');
+var scoreElem = document.getElementById('score-count');
+
+// Démarre la caméra et le jeu
+startBtn.onclick = function(){
+  startBtn.style.display = "none";
+  camera.start();
+};
+
+
+// Donne une valeur d'abscisse aléatoire dans le canvas
+function getRandomXpos(){
+  return Math.floor(Math.random() * canvasElement.width);
+};
+
+function getRandomSpeed(){
+  var max = 7;
+  var min = 2;
+  return Math.random()* (max - min) + min;
+};
+
+
+
+
+
+
+// Déclaration des variables utiles: position(x; y), position à atteindre(targetX, targetY), vélocité(velX, velY) et vitesse(speed)
+//var targetX = getRandomXpos(), targetY = -30, y = canvasElement.height+30, velY = 0, speed = getRandomSpeed(), touche = false;
+
+// Mise à jour de l'image de la bulle sur le canvas
+Balloon.prototype.update = function(){
+  scoreElem.innerHTML=score;
+
+
+  if(!this.touche){
+    // MAJ des variables déclarées plus haut
+    var ty = this.targetY - this.y,
+      dist = Math.sqrt(0+ty*ty),
+      rad = Math.atan2(ty,0),
+      angle = rad/Math.PI * 180;
+
+      this.velY = (ty/dist)*this.speed;
+
+      // Déplacement de la POSITION DE LA BULLE vers le haut
+      this.y += this.velY
+
+
+    // On crée une nouvelle bulle
+    canvasCtx.strokeStyle = 'white';
+    canvasCtx.fillStyle = 'rgba(100,100,255,0.3)';
+    canvasCtx.beginPath();
+    canvasCtx.arc(this.targetX,this.y,30,0,Math.PI*2);
+    canvasCtx.stroke();
+    canvasCtx.fill();
+    var absX = Math.round(this.targetX);
+    var absY = Math.round(this.y);
+
+
+
+    // Si le ballon arrive tout en haut
+    if(this.y <= this.targetY){
+      // On dit qu'il est arrivé donc il disparaît
+      this.targetY = this.y;
+    }
+
+    // Si le ballon est éclaté par le doigt
+    else if(Math.abs(absX-posTip[0])<15 && Math.abs(absY-posTip[1])){
+      // On dit qu'il est arrivé donc il disparaît
+      this.targetY = this.y;
+      // Pour sortir de la condition "non-touché"
+      this.touche = true;
+      // On augmente le score
+      score++ ;
+    }
+
+    //Si le ballon est toujours en cours de route
+    else{
+      updateNote.innerText = 'Index fingertip = ['+posTip[0]+' ; '+posTip[1]+'] and balloon = ['+ absX +' ; '+absY+']';
+    }
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+//setTimeout(update);
+
+
+
+
+
+
+
+
+
+
+
+
+// ================================================================== END OF BALLOON part
+
+</script>

@@ -14,6 +14,8 @@ urlpatterns = [
     path('game',views.game,name="game"),
     path('game1',views.game1,name="game1"),
     path('game2',views.game2,name="game2"),
+
+    path('gameTempTat', views.gameTempTat, name="gameTempTat"),
+
     path('video_stream', views.video_stream, name='video_stream'),
-    #path('', views.hello_world, name='hello_world'),
 ]

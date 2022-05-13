@@ -17,8 +17,6 @@ class VideoCamera(object):
     def __del__(self):
         self.cap.release()
     def get_frame(self):
-        local = caches['default']
-        local.set('key', 123+np.random.randint(100))
         ret, frame = self.cap.read()
         frame_flip = cv2.flip(frame, 1)
         ret, frame = cv2.imencode('.jpg', frame_flip)
@@ -52,6 +50,10 @@ def checkSession(request):
 
 
 # ARCHITECTURE APPLICATION    
+
+def gameTempTat(request):
+    nom = checkSession(request)
+    return render(request,"gameTempTat.html",{'nom':nom})
 
 def accueil(request):
     nom = checkSession(request)
