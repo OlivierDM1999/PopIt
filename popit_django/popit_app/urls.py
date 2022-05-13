@@ -9,6 +9,7 @@ urlpatterns = [
     path('connexion', views.connexion, name='connexion'),
     path('deconnexion',views.deconnexion, name='deconnexion'),
     path('jouer', views.jouer, name='jouer'),
+    path('getDifficultes', views.getDifficultes, name='getDifficultes'),
     path('classement', views.classement, name='classement'),
     path('contact', views.contact, name='contact'),
     path('game',views.game,name="game"),
@@ -18,4 +19,6 @@ urlpatterns = [
     path('gameTempTat', views.gameTempTat, name="gameTempTat"),
 
     path('video_stream', views.video_stream, name='video_stream'),
+    path('mode_perso',views.mode_perso,name="mode_perso")
+    #path('', views.hello_world, name='hello_world'),
 ]
