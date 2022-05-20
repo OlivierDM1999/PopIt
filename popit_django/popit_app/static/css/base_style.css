@@ -20,6 +20,25 @@ label{
     font-family: 'Poppins';
 }
 
+.dataTables_filter label
+{
+    color:#FFEF96 !important;
+}
+
+.dataTables_length label
+{
+    color:#FFEF96 !important;
+}
+
+#table_paginate a
+{
+    color:#FFEF96 !important;
+}
+
+#table_paginate span a
+{
+    color:black !important;
+}
 
 /**
 footer {
