@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid vh-100">
+    <div class="row justify-content-center m-5 p-5" style="height: 100%; background-color: white; border-radius: 20px;">
+        <div class="col">
+            <h2 class="text-center" style="width:100%; font-weight: bold; color:#50394C"> Création d'un mode de jeu personnalisé </h2>
+            <form method='POST'>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="text-center mt-5">
+                    <button class="btn btn-dark my-2 my-sm-0" type="submit" style="border-radius: 20px; background-color:#50394C;"><h5 style="color:#FFEF96">Créer</h5></button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
