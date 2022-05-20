@@ -5,5 +5,9 @@
         
     </div>
 </div>
-<iframe src="{% url 'gamefinal' %}" width="1000px" height="600px" title="Iframe"></iframe>
+<div class="row" style="height:50px"></div>
+<center>
+    <iframe src="{% url 'gamefinal' mode=mode difficulte=difficulte %}" width="1000px" height="600px" title="Iframe"></iframe>
+</center>
+
 {% endblock %}

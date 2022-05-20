@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 
 <body class="bx--body p20">
@@ -31,6 +32,13 @@
       <span>Play</span>
     </div>
   </div>
+
+  <form class="form-group" method="POST" action="{% url 'updatePartie' %}" style="display: none" id="updatePartie" target="_top">
+    {% csrf_token %}
+    <input type="hidden" id="idPartie" name="idPartie" value="{{partie}}">
+    <input type="hidden" id="score" name="score" value="0">
+    <input type="hidden" id="tempsImparti" name="tempsImparti" value="{{tempsImparti}}">
+  </form>
   
 </body>
 
@@ -55,7 +63,7 @@
   var score = 0;
   var nbrBallons = 0;
   var initTime = 0;
-  var maxTime = 30;
+  var maxTime = {{tempsImparti}};
   var firstframe = true;
 
   var maxpoints = 0;
@@ -66,10 +74,13 @@
   var currentTime = 0;
 
   // 'facile', 'normal', 'difficile'
-  var difficulte = 'difficile'; //règle la vitesse des ballons
+  var difficulte = '{{difficulte}}'; //règle la vitesse des ballons
 
   // 'classique', 'explosif'
-  var mode = 'explosif'; //règle le nombre de ballons
+  var mode = '{{mode}}'; //règle le nombre de ballons
+
+  console.log("DIFFICULTE ",difficulte)
+  console.log("MODE ",mode)
 
   switch(difficulte){
     case 'facile':
@@ -147,7 +158,7 @@ function Balloon(){
         arrayBalloons[j] = new Balloon();
         maxpoints = maxpoints + arrayBalloons[j].points;
   }
-  console.log('maxpoints', maxpoints);
+  
 
 
   function onResults(results) {
@@ -166,8 +177,14 @@ function Balloon(){
     }
     var restTime = maxTime+1 + Math.floor((d-f)/1000);
     
-    if(restTime <= 0){
+    if(restTime == 0){
+
       arrayBalloons.length = 0;
+      $("#score").val(score);
+      $("#tempsImparti").val(maxTime-restTime);
+      document.getElementById("updatePartie").submit();
+
+
     }else{
       timeElem.innerHTML = restTime;
     }
@@ -183,7 +200,9 @@ function Balloon(){
     }
     canvasCtx.restore();
     if(arrayBalloons.length == 0){
-    timeElem.innerHTML = 0;
+
+      timeElem.innerHTML = 0;
+     
     }
     
   }

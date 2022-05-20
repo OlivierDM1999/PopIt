@@ -21,8 +21,10 @@ class Classement(models.Model):
 """
 
 class Modele(models.Model):
-    idModele = models.AutoField(primary_key=True)
-    lien = models.CharField(max_length=255)
+    idModele = models.AutoField(primary_key=True)  
+    lien_pkl = models.CharField(max_length=255,default="")
+    lien_pb = models.CharField(max_length=255,default="")
+
 
 class Joueur(models.Model):
     nom = models.CharField(max_length=100)

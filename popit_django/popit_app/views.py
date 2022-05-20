@@ -16,11 +16,13 @@ from popit_app.faceNet_models.code.real_time_face_recognition import add_overlay
 
 
 def gen(type_):
+
+    video_capture = cv2.VideoCapture(0)
     frame_interval = 3  # Number of frames after which to run face detection
     fps_display_interval = 5  # seconds
     frame_rate = 0
     frame_count = 0
-    video_capture = cv2.VideoCapture(0)
+    
     if type_ == 1:
         face_recognition = face.Recognition()
     start_time = time.time()
@@ -34,12 +36,14 @@ def gen(type_):
         #print(type_)
         # Capture frame-by-frame
         if type_ == 0:
+            
             ret, frame = video_capture.read()
             #frame_flip = cv2.flip(frame, 1)
             ret, frame = cv2.imencode('.jpg', frame)
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n\r\n')
 
         if type_ == 1:
+            
             ret, frame = video_capture.read()
             l_names = None 
             if (frame_count % frame_interval) == 0:
@@ -101,12 +105,15 @@ def checkAuth(request):
     
     if request.method =="POST":
         value = request.POST.get("checkAuth")
+        
         if value == "0":
             return redirect("jouer")
 
         else:
             request.session["auth"] = True
-            return redirect("game2")
+            mode = request.POST.get("mode")
+            difficulte = request.POST.get("difficulte")
+            return redirect("game2",mode=mode,difficulte=difficulte)
 
     else:
         return redirect('accueil')
@@ -118,15 +125,18 @@ def checkAuth(request):
 #     return render(request,"gamefinal.html",{'nom':nom})
 
 def accueil(request):
-    #Request_BDD.addModele('PopIt/popit_django/popit_app/faceNet_models/testModels.h5')
+    #Request_BDD.addModele('../popit_django/popit_app/faceNet_models/model_checkpoints/my_classifier.pkl','../popit_django/popit_app/faceNet_models/model_checkpoints/20180408-102900.pb')
     #Request_BDD.addMode('classique', 'facile', 180, False)
     #Request_BDD.addMode('classique', 'moyen', 240, False)
     #Request_BDD.addMode('classique', 'difficile', 300, False)
     #Request_BDD.addMode('explosif', 'facile', 180, True)
     #Request_BDD.addMode('explosif', 'difficile', 300, True)
+    #Request_BDD.afficherTable()
 
     nom = checkSession(request)
     return render(request,"accueil.html",{'nom':nom})
+
+
 
 def inscription(request):
     nom = checkSession(request)
@@ -236,49 +246,41 @@ def contact(request):
     return render(request,"contact.html",{'nom':nom})
 
 
-def gamefinal(request):
+def gamefinal(request,mode,difficulte):
     nom = checkSession(request)
     if nom != "":
         if request.method == "GET":
             
-            modeSelected = request.GET.get('mode')
-            difficulteSelected = request.GET.get('difficulte')
+            #modeSelected = request.GET.get('mode')
+            #difficulteSelected = request.GET.get('difficulte')
 
-            print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
+            print('Mode :', mode , ' | Difficulte :', difficulte)
 
             # AJOUTER verifification identité avec faceNet ...
             # Scripts python: appel faceNet en fonction du lien du modele
             # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
             
-            idPartie, temps = Request_BDD.addPartie(1, modeSelected, difficulteSelected, request.session['mail'])
-            Request_BDD.modificationPartie(idPartie, 92, 300)
+            idPartie, temps = Request_BDD.addPartie(1, mode, difficulte, request.session['mail'])
+            #Request_BDD.modificationPartie(idPartie, 92, 300)
 
             print("Temps", temps)
-            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps})
+            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': 10, 'mode':mode, 'difficulte':difficulte })
 
     else : 
         return redirect('jouer')
 
-def game2(request):
+def game2(request,mode,difficulte):
     nom = checkSession(request)
 
     if nom != "":
         if request.method == "GET":
-            
-            modeSelected = request.GET.get('mode')
-            difficulteSelected = request.GET.get('difficulte')
 
-            print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
-
-            # AJOUTER verifification identité avec faceNet ...
-            # Scripts python: appel faceNet en fonction du lien du modele
-            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
-            
-            #idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
-            #Request_BDD.modificationPartie(idPartie, 92, 300)
-
-            #print("Temps", temps)
-            return render(request,"game2.html")
+            if verifyAuth(request):
+                print("game2")                
+                print('Mode :', mode , ' | Difficulte :', difficulte)
+                return render(request,"game2.html",{'mode':mode,'difficulte':difficulte,'nom':nom})
+            else:
+                return redirect('jouer')
 
     else : 
         return redirect('jouer')
@@ -321,7 +323,7 @@ def authentification(request):
             print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
             
             if verifyAuth(request):
-                return redirect("game2")
+                return redirect("game2",mode=modeSelected,difficulte=difficulteSelected)
 
             # AJOUTER verifification identité avec faceNet ...
             # Scripts python: appel faceNet en fonction du lien du modele
@@ -336,3 +338,18 @@ def authentification(request):
     else : 
         return redirect('jouer')
    
+
+def updatePartie(request):
+    #requets de modifications
+    if request.method =="POST":
+        print(request.POST.get("idPartie"))
+        print(request.POST.get("score"))
+        print(request.POST.get("tempsImparti"))
+        idPartie = request.POST.get("idPartie")
+        score = int(request.POST.get("score"))
+        tempsImparti = int(request.POST.get("tempsImparti"))
+        Request_BDD.modificationPartie(idPartie, score, tempsImparti)
+    
+    
+    return redirect("jouer")
+    

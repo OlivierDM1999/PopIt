@@ -56,25 +56,20 @@
     xmlhttp.send();
 </script>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="text-center p-3">
-            <h1>Authentification</h1>
-            <br>
-            <h1>Mode : {{mode}}</h1>
-            <br>
-            <h1>Difficulté : {{difficulte}}</h1>
-        </div>
-        <br>
-        <p>Vérification en cours...</p>
-        <br>
-        <div id="timecounter"></div>
-        <div id="progress"></div>
-        <form class="form-group" method="POST" action="{% url 'checkAuth' %}" style="display: none" id="authentification">
-            {% csrf_token %}
-            <input type="hidden" id="checkAuth" name="checkAuth" value="0">
-        </form>
+
+<div class="align-items-center justify-content-center mt-2">
+    <div class="text-center p-5">
+        <h1>Vérification en cours...</h1>
     </div>
+    <div id="timecounter"></div>
+    <div id="progress"></div>
+    <form class="form-group" method="POST" action="{% url 'checkAuth' %}" style="display: none" id="authentification">
+        {% csrf_token %}
+        <input type="hidden" id="checkAuth" name="checkAuth" value="0">
+        <input type="hidden" id="mode" name="mode" value="{{mode}}">
+        <input type="hidden" id="difficulte" name="difficulte" value="{{difficulte}}">
+    </form>
 </div>
-<!--<img src="{% url 'video_stream' type_=0 %}" ></img>-->
+
+
 {% endblock %}

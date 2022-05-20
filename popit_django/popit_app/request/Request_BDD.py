@@ -71,10 +71,11 @@ class Request_BDD():
 
 
     # Ajout Modele
-    def addModele(lien_modele):
-        if (Modele.objects.filter(lien__exact=lien_modele).count()==0):
+    def addModele(lien_pkl,lien_pb):
+        if (Modele.objects.filter(lien_pkl__exact=lien_pkl,lien_pb__exact=lien_pb).count()==0) :
             ajoutModele = Modele.objects.create(
-                lien = lien_modele
+                lien_pkl = lien_pkl,
+                lien_pb = lien_pb
             )
             return 'OK'
         else:
@@ -105,6 +106,12 @@ class Request_BDD():
         Joueur.objects.all().delete()
         Mode.objects.all().delete()
         Modele.objects.all().delete()
+
+    def afficherTable():
+        print(Partie.objects.all())
+        print(Joueur.objects.all())
+        print(Mode.objects.all())
+        print(Modele.objects.all())
 
 
     def suppressionJoueur(email):
