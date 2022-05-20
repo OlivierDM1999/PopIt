@@ -49,8 +49,8 @@ import os.path
 from glob import glob
 
 gpu_memory_fraction = 0.3
-facenet_model_checkpoint = "E:/Documents/Cours/MA2/WebTech/Project/PopIt/popit_django/popit_app/faceNet_models/model_checkpoints/20180408-102900.pb"
-classifier_model = "E:/Documents/Cours/MA2/WebTech/Project/PopIt/popit_django/popit_app/faceNet_models/model_checkpoints/my_classifier.pkl"
+facenet_model_checkpoint = "../popit_django/popit_app/faceNet_models/model_checkpoints/20180408-102900.pb"
+classifier_model = "../popit_django/popit_app/faceNet_models/model_checkpoints/my_classifier.pkl"
 
 debug = False
 

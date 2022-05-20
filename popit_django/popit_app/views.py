@@ -31,7 +31,7 @@ def gen(type_):
         face.debug = True
     """
     while True:
-        
+        #print(type_)
         # Capture frame-by-frame
         if type_ == 0:
             ret, frame = video_capture.read()
@@ -75,8 +75,8 @@ def video_stream(request,type_):
     return StreamingHttpResponse(video_object,content_type=content_type)
 
   
-def game(request):
-    return render(request,"game.html")
+# def game(request):
+#     return render(request,"game.html")
 
 
 
@@ -113,9 +113,9 @@ def checkAuth(request):
 
 # ARCHITECTURE APPLICATION    
 
-def gamefinal(request):
-    nom = checkSession(request)
-    return render(request,"gamefinal.html",{'nom':nom})
+# def gamefinal(request):
+#     nom = checkSession(request)
+#     return render(request,"gamefinal.html",{'nom':nom})
 
 def accueil(request):
     #Request_BDD.addModele('PopIt/popit_django/popit_app/faceNet_models/testModels.h5')
@@ -283,8 +283,8 @@ def game2(request):
     else : 
         return redirect('jouer')
 
-def game1(request):
-    return render(request,"game.html")
+# def game1(request):
+#     return render(request,"game.html")
 
 
 
