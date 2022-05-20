@@ -16,7 +16,7 @@ urlpatterns = [
     path('game1',views.game1,name="game1"),
     path('game2',views.game2,name="game2"),
 
-    path('gameTempTat', views.gameTempTat, name="gameTempTat"),
+    path('gamefinal', views.gamefinal, name="gamefinal"),
 
     path('video_stream', views.video_stream, name='video_stream'),
     path('mode_perso',views.mode_perso,name="mode_perso")

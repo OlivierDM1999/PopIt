@@ -48,9 +48,9 @@ def checkSession(request):
 
 # ARCHITECTURE APPLICATION    
 
-def gameTempTat(request):
+def gamefinal(request):
     nom = checkSession(request)
-    return render(request,"gameTempTat.html",{'nom':nom})
+    return render(request,"gamefinal.html",{'nom':nom})
 
 def accueil(request):
     #Request_BDD.addModele('PopIt/popit_django/popit_app/faceNet_models/testModels.h5')
@@ -167,6 +167,30 @@ def classement(request):
 def contact(request):
     nom = checkSession(request)
     return render(request,"contact.html",{'nom':nom})
+
+
+def gamefinal(request):
+    nom = checkSession(request)
+    if nom != "":
+        if request.method == "GET":
+            
+            modeSelected = request.GET.get('mode')
+            difficulteSelected = request.GET.get('difficulte')
+
+            print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
+
+            # AJOUTER verifification identité avec faceNet ...
+            # Scripts python: appel faceNet en fonction du lien du modele
+            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
+            
+            idPartie, temps = Request_BDD.addPartie(1, modeSelected, difficulteSelected, request.session['mail'])
+            Request_BDD.modificationPartie(idPartie, 92, 300)
+
+            print("Temps", temps)
+            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps})
+
+    else : 
+        return redirect('jouer')
 
 def game2(request):
     nom = checkSession(request)

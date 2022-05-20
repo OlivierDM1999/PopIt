@@ -45,7 +45,16 @@
   box-shadow:0 0 20px rgba(0, 0, 0, 0.5);
 }
 #pause-btn{
-  
+
+}
+#timer-label{
+  position:absolute;
+  top:50px;
+  left:10px;
+  font-family: 'Contrail One', cursive;
+  font-size:30px;
+  color:#fff;
+  text-shadow:1px 1px 0 #000;
 }
 .balloon.green{
   position:absolute;
