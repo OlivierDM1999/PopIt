@@ -7,31 +7,74 @@ import numpy as np
 from . import forms
 from django.contrib.auth import login
 from .request.Request_BDD import Request_BDD
+from .faceNet_models.code.real_time_face_recognition import run_predictions
+import argparse
+import sys
+import time
+from popit_app.faceNet_models.code import face
+from popit_app.faceNet_models.code.real_time_face_recognition import add_overlays
 
 
-# FONCTIONS POUR LE JEU 
+def gen(type_):
+    frame_interval = 3  # Number of frames after which to run face detection
+    fps_display_interval = 5  # seconds
+    frame_rate = 0
+    frame_count = 0
+    video_capture = cv2.VideoCapture(0)
+    if type_ == 1:
+        face_recognition = face.Recognition()
+    start_time = time.time()
 
-class VideoCamera(object):
-    def __init__(self):
-        self.cap = cv2.VideoCapture(0)
-    def __del__(self):
-        self.cap.release()
-    def get_frame(self):
-        ret, frame = self.cap.read()
-        frame_flip = cv2.flip(frame, 1)
-        ret, frame = cv2.imencode('.jpg', frame_flip)
-        return frame.tobytes()
-
-def gen(camera):
+    """  
+    if args.debug:
+        print("Debug enabled")
+        face.debug = True
+    """
     while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        
+        # Capture frame-by-frame
+        if type_ == 0:
+            ret, frame = video_capture.read()
+            #frame_flip = cv2.flip(frame, 1)
+            ret, frame = cv2.imencode('.jpg', frame)
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n\r\n')
 
-def video_stream(request):
-    video_object=gen(VideoCamera())
-    return StreamingHttpResponse(video_object,content_type='multipart/x-mixed-replace; boundary=frame')
+        if type_ == 1:
+            ret, frame = video_capture.read()
+            l_names = None 
+            if (frame_count % frame_interval) == 0:
+                faces,l_names = face_recognition.identify(frame)
+                #print(l_names)
+                # Check our current fps
+                end_time = time.time()
+                if (end_time - start_time) > fps_display_interval:
+                    frame_rate = int(frame_count / (end_time - start_time))
+                    start_time = time.time()
+                    frame_count = 0
 
+            add_overlays(frame, faces, frame_rate)
+            frame_count += 1
+            ret, frame = cv2.imencode('.jpg', frame)
+            
+            try:
+                name = l_names[0]
+                yield (name+"_")
+            except:
+                name = "/"
+            
+                
+            #yield l_names
+            #yield (name+"_")
 
+def video_stream(request,type_):
+    video_object=gen(type_)
+    content_type = 'multipart/x-mixed-replace; boundary=frame'
+    if type_ == 1:
+        content_type = 'text/event-stream'
+
+    return StreamingHttpResponse(video_object,content_type=content_type)
+
+  
 def game(request):
     return render(request,"game.html")
 
@@ -45,6 +88,28 @@ def checkSession(request):
         nom = ""
     return nom
 
+def verifyAuth(request):
+    try:
+        auth = request.session['auth']
+    except:
+        auth = False
+    return auth   
+
+
+
+def checkAuth(request):
+    
+    if request.method =="POST":
+        value = request.POST.get("checkAuth")
+        if value == "0":
+            return redirect("jouer")
+
+        else:
+            request.session["auth"] = True
+            return redirect("game2")
+
+    else:
+        return redirect('accueil')
 
 # ARCHITECTURE APPLICATION    
 
@@ -92,6 +157,8 @@ def connexion(request):
                 nomJoueur = Request_BDD.getNomJoueur(infos['email'])
                 request.session['nom'] = nomJoueur
                 request.session['mail'] = infos['email']
+                request.session['auth'] = False
+
                 return redirect(accueil)
             else:
                 return render(request,"connexion.html", {'form' : form, 'nom':nom})
@@ -166,6 +233,7 @@ def contact(request):
 
 def game2(request):
     nom = checkSession(request)
+
     if nom != "":
         if request.method == "GET":
             
@@ -178,11 +246,11 @@ def game2(request):
             # Scripts python: appel faceNet en fonction du lien du modele
             # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
             
-            idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
-            Request_BDD.modificationPartie(idPartie, 92, 300)
+            #idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
+            #Request_BDD.modificationPartie(idPartie, 92, 300)
 
-            print("Temps", temps)
-            return render(request,"game2.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps})
+            #print("Temps", temps)
+            return render(request,"game2.html")
 
     else : 
         return redirect('jouer')
@@ -214,3 +282,29 @@ def mode_perso(request):
         return render(request,"mode_perso.html", {'form' : form, 'nom':nom})
 
 
+
+def authentification(request):
+    nom = checkSession(request)
+    if nom != "":
+        if request.method == "GET":
+            
+            modeSelected = request.GET.get('mode')
+            difficulteSelected = request.GET.get('difficulte')
+            print('Mode :', modeSelected , ' | Difficulte :', difficulteSelected)
+            
+            if verifyAuth(request):
+                return redirect("game2")
+
+            # AJOUTER verifification identité avec faceNet ...
+            # Scripts python: appel faceNet en fonction du lien du modele
+            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
+            
+            #idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
+            #Request_BDD.modificationPartie(idPartie, 92, 300)
+
+            #print("Temps", temps)
+            return render(request,'authentification.html',{'mode':modeSelected,'difficulte':difficulteSelected,'nom':nom})
+
+    else : 
+        return redirect('jouer')
+   

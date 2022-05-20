@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script>
+    let xmlhttp = new XMLHttpRequest();
+    var time = 10;
+    var user_name = "{{nom}}".toLowerCase();
+
+    function log(msg) {
+        console.log(msg);
+    }
+    function reqListener () {
+        log('our js register');
+    }
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    function updateProgress (oEvent) {
+        log('inside progress');
+        log(oEvent);
+        log(oEvent.currentTarget.responseText.length);
+        vartmp = oEvent.target.responseText;
+        const names = vartmp.split('_');
+        last_name_pos = names.length-2;
+        //prendre l' avant dernier élément de names CAR le dernier élément est un élément vide CAR on termine dans le yield par séparateur
+        last_name = names[last_name_pos].toLowerCase();
+        console.log("VERIFICATION : "+last_name);
+        //console.log("NOMBRE D'OCCURENCES THOMAS,",names.filter(element => element == 'Thomas').length)
+        console.log("NOMBRE D'OCCURENCES "+user_name,names.filter(element => element.toLowerCase() == user_name).length);
+        if (names.length == time){
+            console.log("PREMIER TEST");
+            occu = names.filter(element => element.toLowerCase() == user_name).length;
+            if (occu >= time/2){
+                window.alert("Vérification réussie. Vous pouvez commencer à jouer.");
+
+                $("#checkAuth").val("1");
+                //location.href="{% url 'checkAuth' %}"
+                //location.href="{% url 'accueil' %}"
+            }
+            else{
+                window.alert("Vérification ratée. Retour à la page d'accueil.");
+                //location.href="{% url 'checkAuth' %}"
+                //location.href="{% url 'accueil' %}"
+            }
+            console.log("VALEUR : ",$("#checkAuth").val())
+            document.getElementById("authentification").submit(); 
+
+        }
+       
+    }
+    url = "{% url 'video_stream' type_=1 %}";
+    
+    xmlhttp.addEventListener('load', reqListener);
+    xmlhttp.addEventListener('progress', updateProgress, false);
+    xmlhttp.open("get", url, true);
+    xmlhttp.send();
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="text-center p-3">
+            <h1>Authentification</h1>
+            <br>
+            <h1>Mode : {{mode}}</h1>
+            <br>
+            <h1>Difficulté : {{difficulte}}</h1>
+        </div>
+        <br>
+        <p>Vérification en cours...</p>
+        <br>
+        <div id="timecounter"></div>
+        <div id="progress"></div>
+        <form class="form-group" method="POST" action="{% url 'checkAuth' %}" style="display: none" id="authentification">
+            {% csrf_token %}
+            <input type="hidden" id="checkAuth" name="checkAuth" value="0">
+        </form>
+    </div>
+</div>
+<img src="{% url 'video_stream' type_=0 %}" ></img>
+{% endblock %}
