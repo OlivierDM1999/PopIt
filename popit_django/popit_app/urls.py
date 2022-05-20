@@ -18,7 +18,9 @@ urlpatterns = [
 
     path('gamefinal', views.gamefinal, name="gamefinal"),
 
-    path('video_stream', views.video_stream, name='video_stream'),
-    path('mode_perso',views.mode_perso,name="mode_perso")
-    #path('', views.hello_world, name='hello_world'),
+    path('video_stream/', views.video_stream, name='video_stream1'),
+    path('video_stream/<int:type_>', views.video_stream, name='video_stream'),
+    path('mode_perso',views.mode_perso,name="mode_perso"),
+    path('authentification',views.authentification,name='authentification'),
+    path('checkAuth',views.checkAuth,name="checkAuth"),
 ]

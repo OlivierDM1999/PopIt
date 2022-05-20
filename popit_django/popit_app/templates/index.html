@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+    
+    <script>
+        let xmlhttp = new XMLHttpRequest();
+        var time = 5;
+
+        function log(msg) {
+            console.log(msg);
+        }
+        function reqListener () {
+            log('our js register');
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        function updateProgress (oEvent) {
+            log('inside progress');
+            log(oEvent);
+            log(oEvent.currentTarget.responseText.length);
+            vartmp = oEvent.target.responseText;
+            const names = vartmp.split('_');
+            last_name_pos = names.length-2
+            //prendre le dernier élément de names
+            last_name = names[last_name_pos]
+            if (last_name == "Thomas"){
+                window.alert("Vérification réussie. Vous pouvez commencer à jouer.");
+                location.href="{% url 'accueil' %}"
+            }
+            
+        }
+        url = '{% url "test_stream" %}';
+        
+        xmlhttp.addEventListener('load', reqListener);
+        xmlhttp.addEventListener('progress', updateProgress, false);
+        xmlhttp.open("get", url, true);
+        xmlhttp.send();
+
+    </script>
+<body>
+    <p>Vérification en cours...</p>
+    <br>
+    <div id="timecounter"></div>
+    <div id="progress"></div>
+</body>
+</html>
