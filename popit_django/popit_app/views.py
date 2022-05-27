@@ -264,7 +264,7 @@ def gamefinal(request,mode,difficulte):
             #Request_BDD.modificationPartie(idPartie, 92, 300)
 
             print("Temps", temps)
-            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': 10, 'mode':mode, 'difficulte':difficulte })
+            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps, 'mode':mode, 'difficulte':difficulte })
 
     else : 
         return redirect('jouer')
