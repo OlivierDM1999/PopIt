@@ -55,6 +55,7 @@
   const videoElement = document.getElementsByClassName('input_video')[0];
   var canvasElement = document.getElementsByClassName('canvas')[0];
   var canvasCtx = canvasElement.getContext('2d');
+  var checkStartBtn = false; 
 
   var d = null;
   var posTip = [0, 0];
@@ -79,6 +80,64 @@
 
   console.log("DIFFICULTE ",difficulte)
   console.log("MODE ",mode)
+
+
+  window.onbeforeunload = function() {
+
+    if (checkStartBtn == true){
+      console.log("CAS 1");
+
+      $.ajax({
+      type: 'POST',
+      url: "{% url 'updatePartie2' %}",
+      data:{
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        id: $("#idPartie").val(),
+        score: score,
+        tempsImparti: maxTime-currentTime,
+      },
+      dataType: 'json',
+      success: function(response){
+        console.log("REEEUSIIITE");
+      },
+      fail: function(response){
+        alert("ECHEC");
+      }
+      });
+
+
+      //mise à jour de la partie
+    }
+
+
+    else{
+      console.log("CAS 2");
+      
+
+      $.ajax({
+      type: 'POST',
+      url: "{% url 'deletePartie' %}",
+      data:{
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        id: $("#idPartie").val(),
+      },
+      dataType: 'json',
+      success: function(response){
+        console.log("REEEUSIIITE");
+      },
+      fail: function(response){
+        alert("ECHEC");
+      }
+      });
+      //suppression de la partie 
+    }
+  }
+
+
+
+
+
+  
 
   switch(difficulte){
     case 'facile':
@@ -184,6 +243,7 @@ function Balloon(){
       arrayBalloons[i].update();
     }
     var restTime = maxTime+1 + Math.floor((d-f)/1000);
+    currentTime = restTime;
     
     if(restTime == 0){
 
@@ -244,8 +304,10 @@ var scoreElem = document.getElementById('score-count');
 
 // Démarre la caméra et le jeu
 startBtn.onclick = function(){
+  checkStartBtn = true;
   startBtn.style.display = "none";
   camera.start();
+
 };
 
 // Donne une valeur d'abscisse aléatoire dans le canvas

@@ -18,7 +18,9 @@ urlpatterns = [
     path('mode_perso',views.mode_perso,name="mode_perso"),
     path('authentification',views.authentification,name='authentification'),
     path('checkAuth',views.checkAuth,name="checkAuth"),
-    path('updatePartie',views.updatePartie, name="updatePartie")
+    path('updatePartie',views.updatePartie, name="updatePartie"),
+    path('deletePartie',views.deletePartie, name="deletePartie"),
+    path('updatePartie2',views.updatePartie2,name="updatePartie2"),
 ]
 
 

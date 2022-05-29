@@ -130,7 +130,7 @@ def accueil(request):
     #Request_BDD.addMode('explosif', 'facile', 180, True)
     #Request_BDD.addMode('explosif', 'difficile', 300, True)
     #Request_BDD.afficherTable()
-
+    #Request_BDD.viderTable()
     nom = checkSession(request)
     return render(request,"accueil.html",{'nom':nom})
 
@@ -244,6 +244,8 @@ def contact(request):
     return render(request,"contact.html",{'nom':nom})
 
 
+
+
 def gamefinal(request,mode,difficulte):
     nom = checkSession(request)
     if nom != "":
@@ -254,6 +256,7 @@ def gamefinal(request,mode,difficulte):
             print('Mode :', mode , ' | Difficulte :', difficulte)
 
             idPartie, temps, pointsNegatifs = Request_BDD.addPartie(1, mode, difficulte, request.session['mail'])
+
            
 
             print("Temps", temps)
@@ -332,3 +335,19 @@ def updatePartie(request):
     
     return redirect("jouer")
     
+def deletePartie(request):
+    if request.method =="POST":
+        print(request.POST.get("id"))
+        Request_BDD.suppressionpartie(request.POST.get("id"))
+
+    return HttpResponse("delete")
+
+
+def updatePartie2(request):
+    if request.method =="POST":
+        print(request.POST.get("id"))
+        print(request.POST.get("score"))
+        print(request.POST.get("tempsImparti"))
+        Request_BDD.modificationPartie(request.POST.get("id"), int(request.POST.get("score")), int(request.POST.get("tempsImparti")))
+
+    return HttpResponse("modif2")
