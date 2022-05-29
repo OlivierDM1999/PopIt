@@ -251,20 +251,15 @@ def gamefinal(request,mode,difficulte):
     if nom != "":
         if request.method == "GET":
             
-            #modeSelected = request.GET.get('mode')
-            #difficulteSelected = request.GET.get('difficulte')
+
 
             print('Mode :', mode , ' | Difficulte :', difficulte)
 
-            # AJOUTER verifification identité avec faceNet ...
-            # Scripts python: appel faceNet en fonction du lien du modele
-            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
-            
-            idPartie, temps = Request_BDD.addPartie(1, mode, difficulte, request.session['mail'])
-            #Request_BDD.modificationPartie(idPartie, 92, 300)
+            idPartie, temps, pointsNegatifs = Request_BDD.addPartie(1, mode, difficulte, request.session['mail'])
+           
 
             print("Temps", temps)
-            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps, 'mode':mode, 'difficulte':difficulte })
+            return render(request,"gamefinal.html",{'nom':nom, 'partie': idPartie, 'tempsImparti': temps, 'mode':mode, 'difficulte':difficulte, "pointsNegatifs":pointsNegatifs })
 
     else : 
         return redirect('jouer')

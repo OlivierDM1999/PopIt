@@ -97,7 +97,7 @@ class Request_BDD():
             idMode = mode,
             idJoueur = joueur
         )
-        return newPartie.pk, mode.tempsImparti
+        return newPartie.pk, mode.tempsImparti, mode.pointsNegatifsOn
 
 
     ############### SUPPRESSION D'ELEMENTS ###############

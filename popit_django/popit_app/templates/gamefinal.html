@@ -141,9 +141,19 @@ function Balloon(){
     this.diametre = 30;
   } 
   else{ // violet
-    this.color = 'rgba(255,0,0,0.3)';
-    this.points = 50;
-    this.diametre = 15;
+    console.log("POINTS NEGATIFS ",'{{pointsNegatifs}}');
+    if ('{{pointsNegatifs}}' == 'True'){
+      this.color = 'rgba(0,0,0,0.3)';
+      this.points = -10;
+      this.diametre = 35;
+
+    }
+    else{
+      this.color = 'rgba(255,0,0,0.3)';
+      this.points = 50;
+      this.diametre = 15;
+    }
+   
   } 
 
   this.y = canvasElement.height + this.diametre+5;
