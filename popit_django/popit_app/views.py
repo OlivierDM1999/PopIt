@@ -120,9 +120,7 @@ def checkAuth(request):
 
 # ARCHITECTURE APPLICATION    
 
-# def gamefinal(request):
-#     nom = checkSession(request)
-#     return render(request,"gamefinal.html",{'nom':nom})
+
 
 def accueil(request):
     #Request_BDD.addModele('../popit_django/popit_app/faceNet_models/model_checkpoints/my_classifier.pkl','../popit_django/popit_app/faceNet_models/model_checkpoints/20180408-102900.pb')
@@ -280,12 +278,6 @@ def game2(request,mode,difficulte):
     else : 
         return redirect('jouer')
 
-# def game1(request):
-#     return render(request,"game.html")
-
-
-
-
 def mode_perso(request):
     print("ok")
     nom = checkSession(request)
@@ -320,14 +312,6 @@ def authentification(request):
             if verifyAuth(request):
                 return redirect("game2",mode=modeSelected,difficulte=difficulteSelected)
 
-            # AJOUTER verifification identité avec faceNet ...
-            # Scripts python: appel faceNet en fonction du lien du modele
-            # Stocker la vérification dans un cookie pour éviter l'identification à chaque game
-            
-            #idPartie, temps = Request_BDD.addPartie(2, modeSelected, difficulteSelected, request.session['mail'])
-            #Request_BDD.modificationPartie(idPartie, 92, 300)
-
-            #print("Temps", temps)
             return render(request,'authentification.html',{'mode':modeSelected,'difficulte':difficulteSelected,'nom':nom})
 
     else : 
@@ -335,7 +319,7 @@ def authentification(request):
    
 
 def updatePartie(request):
-    #requets de modifications
+
     if request.method =="POST":
         print(request.POST.get("idPartie"))
         print(request.POST.get("score"))
