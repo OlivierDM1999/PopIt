@@ -1,7 +1,6 @@
 from django.urls import path
 from popit_app import views
 
-
 urlpatterns = [
     path('', views.accueil, name='accueil'),
     path('accueil', views.accueil, name='accueil'),
@@ -12,12 +11,8 @@ urlpatterns = [
     path('getDifficultes', views.getDifficultes, name='getDifficultes'),
     path('classement', views.classement, name='classement'),
     path('contact', views.contact, name='contact'),
-    #path('game',views.game,name="game"),
-    #path('game1',views.game1,name="game1"),
     path('game2/<str:mode>/<str:difficulte>',views.game2,name="game2"),
-
     path('gamefinal/<str:mode>/<str:difficulte>', views.gamefinal, name="gamefinal"),
-
     path('video_stream/', views.video_stream, name='video_stream1'),
     path('video_stream/<int:type_>', views.video_stream, name='video_stream'),
     path('mode_perso',views.mode_perso,name="mode_perso"),
@@ -25,3 +20,5 @@ urlpatterns = [
     path('checkAuth',views.checkAuth,name="checkAuth"),
     path('updatePartie',views.updatePartie, name="updatePartie")
 ]
+
+

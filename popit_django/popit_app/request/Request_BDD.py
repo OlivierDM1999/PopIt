@@ -104,8 +104,8 @@ class Request_BDD():
     def viderTable():
         Partie.objects.all().delete()
         Joueur.objects.all().delete()
-        Mode.objects.all().delete()
-        Modele.objects.all().delete()
+        #Mode.objects.all().delete()
+        #Modele.objects.all().delete()
 
     def afficherTable():
         print(Partie.objects.all())
