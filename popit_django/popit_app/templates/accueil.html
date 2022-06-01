@@ -5,7 +5,7 @@
 
     <div class="row justify-content-center p-5" style="background-color: #FFEF96;">
         <div class="text-center">
-            <h2 style="font-weight: bold;">Bienvenue {{nom}},</h2>
+            <h2 style="font-weight: bold;">Bienvenue {{nom}} !</h2>
         </div>
     </div>
 
@@ -14,16 +14,13 @@
         <div class="col col-lg-8 col-md-8">
             <div class="card mt-5" style= "border: none;" >
                 <div class="card-body" style="background-color: rgba(188, 90, 69, 0.75);">
-                  <h3 class="card-title" style="font-weight: bold;">POP It ! De quoi s'agit-il ?</h3>
-                  <h5 class="card-text">Le nouveau jeu en réalité augmentée constitant à détruire plein de ballons. Faites les meilleurs scores et battez des joueurs du monde entier</h5>
-                  <a href="{% url 'jouer' %}" class="btn btn-dark " style="border-radius: 20px; background-color:rgba(80, 57, 76, 0.52);"><h5>Testez !</h5></a>
+                  <h2 class="card-title" style="font-weight: bold;">POP It ! De quoi s'agit-il ?</h2>
+                  <h4 class="card-text">Le nouveau jeu en réalité augmentée constitant à détruire plein de ballons. Faites les meilleurs scores et battez des joueurs du monde entier</h4>
+                  <a href="{% url 'jouer' %}" class="m-2 btn btn-dark" style="border-radius: 20px; background-color:rgba(80, 57, 76, 0.52);"><h5>Testez !</h5></a>
                 </div>
             </div>
         </div>
         <div class="col col-lg-4 col-md-4">
-            <div class="card">
-                <img class="card-img-top" src="{% static 'css/img/ballons.png' %}" alt="Card image cap">
-            </div>
         </div>
     </div>
 
@@ -35,7 +32,7 @@
 
     <div class="row justify-content-center p-5">
         <div class="card">
-            <img class="card-img-top" src="{% static 'css/img/video.jpg' %}" alt="Card image cap">
+            <video controls><source src="{% static 'css/video/video_pop.mp4' %}" type="video/mp4"></video> 
         </div>
     </div>
 
